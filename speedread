@@ -37,6 +37,8 @@ use constant RESUME => 0;
 use constant MULTI_WORD => 0;
 use constant SLEEP_TIME_SEC => 1;
 
+use constant HEIGHT => 80;
+use constant WIDTH => 100;
 
 use utf8;
 binmode(STDIN, ":encoding(UTF-8)");
@@ -186,7 +188,12 @@ sub process_keys {
 	}
 }
 
+sub size_screen {
+	print "\e[8;" . HEIGHT . ";" . WIDTH . "t";
+}
+
 sub main {
+	size_screen();
 	show_guide();
 
 	$next_word_time = time();
