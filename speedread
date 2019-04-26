@@ -33,8 +33,8 @@ use constant;
 use v5.14;
 
 my $wpm = 300;
-use constant RESUME => 0;
-use constant MULTI_WORD => 0;
+my $resume = 0;
+my $multi_word = '';
 use constant SLEEP_TIME_SEC => 1;
 
 use constant HEIGHT => 80;
@@ -50,8 +50,8 @@ use Time::HiRes qw(time sleep gettimeofday tv_interval);
 
 use Getopt::Long;
 GetOptions("wpm|w=i" => \$wpm,
-	   "resume|r=i" => \RESUME,
-	   "multiword|m" => \MULTI_WORD);
+	   "resume|r=i" => \$resume,
+	   "multiword|m!" => \$multi_word);
 
 my $wordtime = 0.9; # relative to wpm
 my $lentime = 0.04; # * sqrt(length $word), relative to wpm
@@ -87,7 +87,7 @@ sub print_stats {
 }
 $SIG{INT} = sub {
 	print_stats;
-	my $resume_word = $wordcounter + RESUME;
+	my $resume_word = $wordcounter + $resume;
 	say " To resume from this point run with argument -r $resume_word";
 	exit;
 };
@@ -193,7 +193,7 @@ sub size_screen {
 }
 
 sub main {
-	size_screen();
+	#size_screen();
 	show_guide();
 
 	$next_word_time = time();
@@ -207,7 +207,7 @@ sub main {
 
 		my (@words) = grep { /./ } split /(?:-|\s)+/;
 
-		if (MULTI_WORD) {
+		if ($multi_word) {
 			# Join adjecent short words
 			for (my $i = 0; $i < $#words - 1; $i++) {
 				if (length($words[$i]) <= 3 and length($words[$i+1]) <= 3) {
@@ -219,7 +219,7 @@ sub main {
 
 		my $wn = 0;
 		while (scalar(@words) > 0) {
-			if ($skipped < RESUME) {
+			if ($skipped < $resume) {
 				$skipped++;
 				shift @words;
 				next;
